@@ -39,8 +39,8 @@ class Transfer(AbstractTransaction):
         (EXECUTED, 'EXECUTED'),
         (CANCELED, 'CANCELED')
     ]
-    source = models.OneToOneField(Wallet, related_name="transfers", on_delete=models.SET)
-    destination = models.OneToOneField(Wallet, on_delete=models.SET)
+    source = models.ForeignKey(Wallet, related_name="transfers", on_delete=models.SET)
+    destination = models.ForeignKey(Wallet, on_delete=models.SET)
     status = models.CharField(max_length=2, choices=TRANSFER_STATUS_CHOICES, default=IN_PROGRESS)
     log = models.TextField(null=True, blank=True)
 
@@ -62,6 +62,8 @@ class Transfer(AbstractTransaction):
     def execute_transaction(self):
         try:
             self.transfer_money()
+            self.status = self.CANCELED
+            self.save()
         except Exception as e:
             self.log = str(e)
             self.status = self.CANCELED
