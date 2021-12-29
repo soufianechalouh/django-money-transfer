@@ -15,7 +15,7 @@ class Wallet(models.Model):
     ]
     owner = models.ForeignKey(User, related_name="wallet", on_delete=models.CASCADE)
     balance = models.FloatField(default=0, blank=True, validators=[MinValueValidator(0)])
-    status = models.CharField(max_length=2, choices=WALLET_STATUS_CHOICES, default=ACTIVE, blank=True)
+    status = models.CharField(max_length=2, choices=WALLET_STATUS_CHOICES, default=ACTIVE)
 
 
 class AbstractTransaction(models.Model):
@@ -41,7 +41,7 @@ class Transfer(AbstractTransaction):
     ]
     source = models.OneToOneField(Wallet, related_name="transfers", on_delete=models.SET)
     destination = models.OneToOneField(Wallet, on_delete=models.SET)
-    status = models.CharField(max_length=2, choices=TRANSFER_STATUS_CHOICES, default=IN_PROGRESS, blank=True)
+    status = models.CharField(max_length=2, choices=TRANSFER_STATUS_CHOICES, default=IN_PROGRESS)
     log = models.TextField(null=True, blank=True)
 
     @transaction.atomic
