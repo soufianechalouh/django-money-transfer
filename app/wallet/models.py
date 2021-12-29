@@ -63,7 +63,7 @@ class Transfer(AbstractTransaction):
     def execute_transaction(self):
         try:
             self.transfer_money()
-            self.status = self.CANCELED
+            self.status = self.EXECUTED
             self.save()
         except Exception as e:
             self.log = str(e)
