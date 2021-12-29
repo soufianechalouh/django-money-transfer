@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
+from django.db.models.signals import post_save
 
 from users.models import User
 
@@ -69,8 +70,10 @@ class Transfer(AbstractTransaction):
             self.status = self.CANCELED
             self.save()
 
-    def save(self, *args, **kwargs):
-        super(Transfer, self).save(*args, *kwargs)
 
-        if self.status == self.IN_PROGRESS:
-            self.execute_transaction()
+def transfer_post_save(sender, instance, created,  *args, **kwargs):
+    if instance.status == Transfer.IN_PROGRESS:
+        instance.execute_transaction()
+
+
+post_save.connect(transfer_post_save, sender=Transfer)
