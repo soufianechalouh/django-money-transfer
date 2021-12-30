@@ -31,7 +31,7 @@ class TransferViewset(ListCreateAPIView):
         return Transfer.objects.filter(Q(source__owner=self.request.user) | Q(destination__owner=self.request.user))
 
     def perform_create(self, serializer):
-        if not User.objects.count(username=serializer.validated_data["destination"]["username"]):
+        if not User.objects.filter(username=serializer.validated_data["destination"]["username"]).count():
             raise ValueError("Destination user does not exist")
         destination = User.objects.get(username=serializer.validated_data["destination"]["username"])
         serializer.save(source=self.request.user, destination=destination)
