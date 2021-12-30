@@ -1,11 +1,13 @@
 from rest_framework.generics import ListCreateAPIView
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.viewsets import ModelViewSet
-from .serializers import SubmissionListCreateSerializer, SubmissionSerializer
+
 from .models import Submission
-from rest_framework.permissions import IsAuthenticated
+from .serializers import SubmissionListCreateSerializer, SubmissionSerializer
 
 
 class SubmissionViewset(ModelViewSet):
+    permission_classes = (IsAdminUser,)
     serializer_class = SubmissionSerializer
     queryset = Submission.objects.all()
 
