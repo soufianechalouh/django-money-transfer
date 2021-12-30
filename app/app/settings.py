@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'users',
     'submissions',
     'wallet',
+    'bankops'
 ]
 
 REST_FRAMEWORK = {
