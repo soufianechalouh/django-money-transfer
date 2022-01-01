@@ -34,11 +34,16 @@ class Withdraw(AbstractTransaction):
         super(Withdraw, self).save(*args, **kwargs)
 
     def confirm_withdraw(self, code):
-        if self.validation_code == code:
-            self.status = self.VALIDATED
+        if self.status == self.AWAITING_VALIDATION:
+            if self.validation_code == code:
+                self.status = self.VALIDATED
+            #     TODO (soufiane): Execute actions for sending money (including deducing from wallet,
+            #      bank operation, setting status to Processed, and saving the transaction id)
+            else:
+                self.status = self.CANCELED
+            self.save()
         else:
-            self.status = self.CANCELED
-        self.save()
+            raise ValueError(f"This operation is on status {self.status}")
 
 
 class Topup(AbstractTransaction):
