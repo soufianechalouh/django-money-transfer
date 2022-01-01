@@ -13,6 +13,3 @@ RUN pip install --upgrade pip && \
 RUN mkdir /app
 WORKDIR /app
 COPY  ./app /app
-
-RUN useradd -ms /bin/bash user
-USER user
