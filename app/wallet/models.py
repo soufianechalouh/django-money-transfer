@@ -14,9 +14,12 @@ class Wallet(models.Model):
         (ON_HOLD, 'ON_HOLD'),
         (ARCHIVED, 'ARCHIVED')
     ]
-    owner = models.ForeignKey(User, related_name="wallet", on_delete=models.CASCADE)
+    owner = models.OneToOneField(User, related_name="wallet", on_delete=models.CASCADE)
     balance = models.FloatField(default=0, blank=True, validators=[MinValueValidator(0)])
     status = models.CharField(max_length=2, choices=WALLET_STATUS_CHOICES, default=ACTIVE)
+
+    def __str__(self):
+        return f"{self.owner.username}'s wallet"
 
 
 class AbstractTransaction(models.Model):
@@ -40,25 +43,26 @@ class Transfer(AbstractTransaction):
         (EXECUTED, 'EXECUTED'),
         (CANCELED, 'CANCELED')
     ]
-    source = models.ForeignKey(Wallet, related_name="transfers", on_delete=models.SET)
-    destination = models.ForeignKey(Wallet, on_delete=models.SET)
+    source = models.ForeignKey(User, related_name="transfers", to_field='username',
+                               null=True, on_delete=models.SET_NULL)
+    destination = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     status = models.CharField(max_length=2, choices=TRANSFER_STATUS_CHOICES, default=IN_PROGRESS)
     log = models.TextField(null=True, blank=True)
 
     @transaction.atomic
     def transfer_money(self):
-        source = self.source
-        destination = self.destination
-        if source.balance < self.amount:
+        source_wallet = self.source.wallet
+        destination_wallet = self.destination.wallet
+        if source_wallet.balance < self.amount:
             raise ValueError("Insufficient balance")
-        if source.status != Wallet.ACTIVE:
+        if source_wallet.status != Wallet.ACTIVE:
             raise ValueError("Source wallet inactive")
-        if destination.status != Wallet.ACTIVE:
+        if destination_wallet.status != Wallet.ACTIVE:
             raise ValueError("Destination wallet inactive")
-        source.balance -= self.amount
-        destination.balance += self.amount
-        source.save()
-        destination.save()
+        source_wallet.balance -= self.amount
+        destination_wallet.balance += self.amount
+        source_wallet.save()
+        destination_wallet.save()
 
     def execute_transaction(self):
         try:

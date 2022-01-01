@@ -1,12 +1,8 @@
-from rest_framework import routers
-from django.urls import path, include
+from django.urls import path
 
 from wallet.views import WalletViewset, TransferViewset
 
-router = routers.DefaultRouter()
-router.register("wallets", WalletViewset)
-router.register("transfers", TransferViewset)
-
 urlpatterns = [
-    path("", include(router.urls))
+    path("wallets/", WalletViewset.as_view()),
+    path("transfers/", TransferViewset.as_view())
 ]
