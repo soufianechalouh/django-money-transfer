@@ -92,11 +92,26 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('MASTER_DB_NAME', 'my_database'),
+        'USER': os.getenv('MASTER_DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('MASTER_DB_PASSWORD', 'my_password'),
+        'HOST':  os.getenv('MASTER_DB_HOST', "0.0.0.0"),
+        'PORT': os.getenv('MASTER_DB_PORT', '32768'),
+        'CONN_MAX_AGE': 0,
+    },
+    "replica": {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('SLAVE_DB_NAME', 'my_database'),
+        'USER': os.getenv('SLAVE_DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('SLAVE_DB_PASSWORD', 'my_password'),
+        'HOST':  os.getenv('SLAVE_DB_HOST', "0.0.0.0"),
+        'PORT': os.getenv('SLAVE_DB_PORT', '32769'),
+        'CONN_MAX_AGE': 0,
     }
 }
 
+DATABASE_ROUTERS = ["app.setup.db_routing.DatabaseRouter"]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
