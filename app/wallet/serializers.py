@@ -4,9 +4,11 @@ from wallet.models import Wallet, Transfer
 
 
 class WalletSerializer(serializers.ModelSerializer):
+    owner = serializers.CharField(source="owner.username", read_only=True)
 
     class Meta:
         model = Wallet
+        fields = ("owner", "balance", "status")
         read_only_fields = ("balance", "status")
 
 
