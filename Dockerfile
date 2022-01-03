@@ -13,5 +13,3 @@ RUN pip install --upgrade pip && \
 RUN mkdir /app
 WORKDIR /app
 COPY  ./app /app
-
-USER user

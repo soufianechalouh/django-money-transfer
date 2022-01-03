@@ -92,11 +92,26 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('MASTER_DB_NAME', 'my_database'),
+        'USER': os.getenv('MASTER_DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('MASTER_DB_PASSWORD', 'my_password'),
+        'HOST':  os.getenv('MASTER_DB_HOST', "0.0.0.0"),
+        'PORT': os.getenv('MASTER_DB_PORT', '32768'),
+        'CONN_MAX_AGE': 0,
+    },
+    "replica": {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('SLAVE_DB_NAME', 'my_database'),
+        'USER': os.getenv('SLAVE_DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('SLAVE_DB_PASSWORD', 'my_password'),
+        'HOST':  os.getenv('SLAVE_DB_HOST', "0.0.0.0"),
+        'PORT': os.getenv('SLAVE_DB_PORT', '32769'),
+        'CONN_MAX_AGE': 0,
     }
 }
 
+DATABASE_ROUTERS = ["app.setup.db_routing.DatabaseRouter"]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -132,8 +147,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
@@ -157,3 +170,12 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "host@email.com")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "******")
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY_ID", "")
+AWS_QUERYSTRING_AUTH = False
+AWS_STORAGE_BUCKET_NAME = "moneyup"
+
+AWS_S3_FILE_OVERWRITE = False
