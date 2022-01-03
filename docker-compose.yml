@@ -49,6 +49,8 @@ services:
       context: .
     ports:
       - "9000:8000"
+    volumes:
+      - "./app:/app"
     command: >
       bash -c "python manage.py runserver 0.0.0.0:8000"
     environment:
@@ -63,6 +65,14 @@ services:
       SLAVE_DB_PORT: "5432"
     depends_on:
       - pg-slave
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    ports:
+      - "99:80"
+    depends_on:
+      - app
 
 volumes:
   postgresql_master_data:
